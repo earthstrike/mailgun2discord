@@ -19,13 +19,15 @@ def verify(api_key: bytes, token: bytes, timestamp: bytes, signature: bytes):
 @post("/mailgun/in")
 def incoming_mg():
     print(request.json)
+
+    loglevel_emoji_table = {"warn": ":warning:", "error": ":skull_crossbones:"}
     if verify(
         MG_API_KEY,
         request.json["signature"]["token"],
         request.json["signature"]["timestamp"],
         request.json["signature"]["signature"],
     ):
-        formatted_msg = f"{request.json['event-data']['event']} :thinking: \n{request.json['event-data']['recipient']} \n ```json\n{request.json['event-data']['delivery-status']}```"
+        formatted_msg = f"{request.json['event-data']['event']} {loglevel_emoji_table[request.json['event-data']['log-level']]} \n{request.json['event-data']['recipient']} \n ```json\n{request.json['event-data']['delivery-status']}```"
         shove2discord(formatted_msg)
 
 
